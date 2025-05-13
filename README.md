@@ -1,28 +1,41 @@
-A web application for managing user groups, allowing users to create transactions and split
-expenses between the payer and other members within each group.
+# User Group Management Web Application
 
-1. Groups
-Page to view all your groups.
-• You can create a new group.
-• Displays a list of groups along with the amount you owe or are owed in each group.
-• Creating a group only requires a title.
+This web application allows users to manage groups, create transactions, and split expenses among group members. It provides features for viewing group balances, adding/removing members, and settling debts within groups.
 
-2. Group
-Page to view all information about a specific group.
-• Displays the group’s title.
-• Shows all assigned members along with the amount you owe or are owed. If the amount is
-not null, provides functionality to settle it.
-• Allows viewing of transactions.
-• Allows adding new members.
-• Allows removing a member, but only if they are settled with everyone in the group.
-• Allows creating a new transaction.
+## Features
 
-3. New Transaction
-Page to create a new transaction.
-• Select who paid for the transaction.
-• Enter the full amount paid.
+### 1. Groups
+- View all your groups in one place.
+- Create a new group by providing only a title.
+- Displays a list of groups with the amount you owe or are owed in each group.
+  
+### 2. Group Details
+- View all information about a specific group:
+  - Group’s title.
+  - A list of all members, with amounts owed or received.
+  - Settling functionality for debts between members.
+  - View a list of all transactions made within the group.
+  
+#### Member Management:
+- Add new members to the group.
+- Remove members only if they are settled with everyone in the group (i.e., no outstanding debts).
 
-How to split the amount:
-• Equally – Amount is split equally between all members.
-• Percentage – Enter a percentage for each member; the system will convert it into amounts.
-• Dynamic – Enter the exact amount for each member manually, including yourself.
+### 3. Transactions
+- Create a new transaction:
+  - Select the person who paid for the transaction.
+  - Enter the total amount paid for the transaction.
+
+#### Split Options:
+- **Equally**: The amount is split equally between all members.
+- **Percentage**: Enter a percentage for each member, and the system will calculate the amounts.
+- **Dynamic**: Manually enter the exact amount each member owes, including yourself.
+
+---
+
+## Getting Started
+
+1. **Clone the repository**:
+
+   ```bash
+   git clone https://github.com/your-repo-url.git
+   cd your-repo-name
