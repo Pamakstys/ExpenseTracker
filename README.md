@@ -31,11 +31,3 @@ This web application allows users to manage groups, create transactions, and spl
 - **Dynamic**: Manually enter the exact amount each member owes, including yourself.
 
 ---
-
-## Getting Started
-
-1. **Clone the repository**:
-
-   ```bash
-   git clone https://github.com/your-repo-url.git
-   cd your-repo-name
