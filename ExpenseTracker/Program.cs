@@ -1,9 +1,19 @@
+using ExpenseTracker.Models;
+using Microsoft.EntityFrameworkCore;
+
+using ExpenseTracker.Interfaces;
+using ExpenseTracker.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //In memory database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("InMemoryDb"));
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IGroupService, GroupService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IGroupMemberService, GroupMemberService>();
 
 // Add services to the container.
 

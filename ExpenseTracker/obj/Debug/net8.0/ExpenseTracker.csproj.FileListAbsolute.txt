@@ -30,3 +30,16 @@ C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\obj\Debug\net8.0\refi
 C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\obj\Debug\net8.0\ExpenseTracker.pdb
 C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\obj\Debug\net8.0\ExpenseTracker.genruntimeconfig.cache
 C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\obj\Debug\net8.0\ref\ExpenseTracker.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\obj\Debug\net8.0\ExpenseTracker.sourcelink.json
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.Extensions.Caching.Abstractions.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.Extensions.Caching.Memory.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.Extensions.Logging.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
+C:\Users\as\Desktop\projects\ExpenseTracker\ExpenseTracker\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
