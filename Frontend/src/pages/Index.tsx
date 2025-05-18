@@ -1,8 +1,8 @@
 export default function Index() {
     return (
         <div className="index-page">
-        <h1>Index Page</h1>
-        <p>Welcome to the index page!</p>
+        <h1>Expense tracker</h1>
+        <p>Welcome to the Expense tracker homepage</p>
         </div>
     );
 }
