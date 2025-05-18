@@ -6,9 +6,12 @@ export type GroupMemberDTO = {
 
 export type TransactionDTO = {
   id: number;
+  amount: number; 
   description: string;
-  amount: number;
-  createdBy: string;
+  date: Date;
+  userId : number;
+  userName: string;
+  groupId: number;
 };
 
 export type ViewGroupDTO = {
@@ -18,3 +21,8 @@ export type ViewGroupDTO = {
   transactions: TransactionDTO[];
 };
 
+export type SettleDTO = {
+  splitId: number;
+  userName: string;
+  amount: number;
+};

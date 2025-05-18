@@ -101,6 +101,7 @@ public class GroupService : IGroupService
     {
         var group = _context.Groups
             .Include(g => g.Members)
+            .Include(g => g.Transactions)
             .FirstOrDefault(g => g.Id == groupViewDTO.GroupId);
 
         if (group == null)
@@ -130,14 +131,15 @@ public class GroupService : IGroupService
         foreach (Transaction transaction in transactions)
         {
             TransactionDTO transactionDTO = new TransactionDTO
-            {
-                Id = transaction.Id,
-                Amount = transaction.Amount,
-                Description = transaction.Description,
-                Date = transaction.Date,
-                UserId = transaction.User.Id,
-                UserName = transaction.User.Name
-            };
+        {
+            Id = transaction.Id,
+            Amount = transaction.Amount,
+            Description = transaction.Description,
+            Date = transaction.Date,
+            UserId = transaction.UserId,
+            UserName = transaction.User.Name,
+            GroupId = transaction.GroupId,
+        };
             transactionDTOs.Add(transactionDTO);
         }
         viewGroupDTO.Transactions = transactionDTOs;

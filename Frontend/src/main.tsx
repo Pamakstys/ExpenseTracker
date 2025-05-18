@@ -10,7 +10,6 @@ import Groups from './pages/Groups.tsx'
 import ViewGroup from './pages/ViewGroup.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -23,5 +22,4 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/login" element={<Login/>}/>
       </Routes>
     </BrowserRouter>
-  </StrictMode>
 )

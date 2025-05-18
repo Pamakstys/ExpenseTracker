@@ -14,33 +14,64 @@ public class TransactionService : ITransactionService
         _context = context;
     }
 
-    public void SettleTransactionSplit(int splitId)
+    public void SettleTransactionSplit(SettleUserIdDTO settleUserIdDTO)
     {
         var transactionSplit = _context.TransactionSplits
             .Include(ts => ts.Transaction)
-            .FirstOrDefault(ts => ts.Id == splitId);
+            .FirstOrDefault(ts => ts.Id == settleUserIdDTO.SplitId && ts.UserId == settleUserIdDTO.UserId);
 
         if (transactionSplit == null)
         {
             throw new ArgumentException("Transaction split not found");
         }
+        var groupMember = _context.GroupMembers
+            .FirstOrDefault(gm => gm.UserId == settleUserIdDTO.UserId && gm.GroupId == transactionSplit.Transaction.GroupId);
+        if (groupMember == null)
+        {
+            throw new ArgumentException("Group member not found");
+        }
+        groupMember.Balance -= transactionSplit.Amount;
+        if(groupMember.Balance == 0)
+        {
+            groupMember.IsSettled = true;
+        }
+
+        _context.GroupMembers.Update(groupMember);
 
         transactionSplit.IsSettled = true;
         _context.TransactionSplits.Update(transactionSplit);
         _context.SaveChanges();
     }
+    public List<SettleDTO> GetSettles(UserGroupIdDTO dto)
+    {
+        var transactionSplits = _context.TransactionSplits
+            .Include(ts => ts.User)
+            .Include(ts => ts.Transaction)
+            .Include(ts => ts.Transaction.User)
+            .Where(ts => ts.Transaction.GroupId == dto.GroupId && ts.UserId == dto.UserId && !ts.IsSettled)
+            .Select(ts => new SettleDTO
+            {
+                SplitId = ts.Id,
+                UserName = ts.Transaction.User.Name,
+                Amount = ts.Amount
+            })
+            .ToList();
 
-    public TransactionDTO GetTransaction(int transactionId)
+        return transactionSplits;
+    }
+
+    public TransactionDTO GetTransaction(UserTransactionIdDTO userTransactionDTO)
     {
         var transaction = _context.Transactions
             .Include(t => t.User)
             .Include(t => t.Group)
-            .FirstOrDefault(t => t.Id == transactionId);
+            .FirstOrDefault(t => t.Id == userTransactionDTO.TransactionId);
 
         if (transaction == null)
         {
             throw new ArgumentException("Transaction not found");
         }
+
 
         return new TransactionDTO
         {
@@ -50,34 +81,13 @@ public class TransactionService : ITransactionService
             Date = transaction.Date,
             UserId = transaction.UserId,
             UserName = transaction.User.Name,
-            GroupId = transaction.GroupId
+            GroupId = transaction.GroupId,
         };
-    }
-
-    public List<TransactionDTO> GetTransactions(int groupId)
-    {
-        var transactions = _context.Transactions
-            .Include(t => t.User)
-            .Include(t => t.Group)
-            .Where(t => t.GroupId == groupId)
-            .Select(t => new TransactionDTO
-            {
-                Id = t.Id,
-                Amount = t.Amount,
-                Description = t.Description,
-                Date = t.Date,
-                UserId = t.UserId,
-                UserName = t.User.Name,
-                GroupId = t.GroupId
-            })
-            .ToList();
-
-        return transactions;
     }
 
     public void AddTransaction(CreateTransactionDTO transactionDTO)
     {
-        var group = _context.Groups.FirstOrDefault(g => g.Id == transactionDTO.GroupId);
+        var group = _context.Groups.Include(g => g.Members).FirstOrDefault(g => g.Id == transactionDTO.GroupId);
         if (group == null)
         {
             throw new ArgumentException("Group not found");
@@ -109,9 +119,22 @@ public class TransactionService : ITransactionService
                 decimal rawAmountPerUser = transactionDTO.Amount / memberCount;
                 decimal amountPerUser = Math.Floor(rawAmountPerUser * 100) / 100;
 
-
                 foreach (var member in group.Members)
                 {
+                    var groupMember = _context.GroupMembers
+                        .FirstOrDefault(gm => gm.UserId == member.UserId && gm.GroupId == transactionDTO.GroupId);
+                    if (groupMember == null)
+                    {
+                        throw new ArgumentException("Group member not found");
+                    }
+                    if (member.UserId == transactionDTO.UserId)
+                    {
+                        continue;
+                    }
+                    groupMember.Balance += amountPerUser;
+                    groupMember.IsSettled = false;
+                    _context.GroupMembers.Update(groupMember);
+
                     TransactionSplit split = new TransactionSplit
                     {
                         TransactionId = transaction.Id,
@@ -122,6 +145,7 @@ public class TransactionService : ITransactionService
                         User = member.User
                     };
                     splits.Add(split);
+
                 }
                 _context.TransactionSplits.AddRange(splits);
                 _context.SaveChanges();
@@ -144,23 +168,38 @@ public class TransactionService : ITransactionService
                     {
                         throw new ArgumentException("User not found");
                     }
+                    if(splitUser.Id == transactionDTO.UserId)
+                    {
+                        continue;
+                    }
+
                     double percentage = (double)split.Amount;
                     if (percentage < 0 || percentage > 100)
                     {
                         throw new ArgumentException("Percentage must be between 0 and 100");
                     }
 
+                    var groupMember = _context.GroupMembers
+                        .FirstOrDefault(gm => gm.UserId == split.UserId && gm.GroupId == transactionDTO.GroupId);
+                    if (groupMember == null)
+                    {
+                        throw new ArgumentException("Group member not found");
+                    }
+                    groupMember.Balance += transactionDTO.Amount * (decimal)(percentage / 100);
+                    groupMember.IsSettled = false;
+                    _context.GroupMembers.Update(groupMember);
                     TransactionSplit newSplit = new TransactionSplit
                     {
                         UserId = split.UserId,
-                        Amount = transactionDTO.Amount * (split.Amount / 100),
+                        Amount = transactionDTO.Amount * ((decimal)percentage / 100),
                         IsSettled = false,
+                        TransactionId = transaction.Id,
                         Transaction = transaction,
-                        User = user
+                        User = splitUser
                     };
                     splits.Add(newSplit);
                 }
-                _context.TransactionSplits.AddRange(transaction.TransactionSplits);
+                _context.TransactionSplits.AddRange(splits);
                 _context.SaveChanges();
                 break;
             case "Dynamic":
@@ -180,6 +219,19 @@ public class TransactionService : ITransactionService
                     {
                         throw new ArgumentException("User not found");
                     }
+                    if (splitUser.Id == transactionDTO.UserId)
+                    {
+                        continue;
+                    }
+                    var groupMember = _context.GroupMembers
+                        .FirstOrDefault(gm => gm.UserId == split.UserId && gm.GroupId == transactionDTO.GroupId);
+                    if (groupMember == null)
+                    {
+                        throw new ArgumentException("Group member not found");
+                    }
+                    groupMember.Balance += split.Amount;
+                    groupMember.IsSettled = false;
+                    _context.GroupMembers.Update(groupMember);
 
                     TransactionSplit newSplit = new TransactionSplit
                     {
@@ -187,17 +239,17 @@ public class TransactionService : ITransactionService
                         Amount = split.Amount,
                         IsSettled = false,
                         Transaction = transaction,
-                        User = user
+                        TransactionId = transaction.Id,
+                        User = splitUser
                     };
                     splits.Add(newSplit);
                 }
-                _context.TransactionSplits.AddRange(transaction.TransactionSplits);
+                _context.TransactionSplits.AddRange(splits);
                 _context.SaveChanges();
                 break;
             default:
                 throw new ArgumentException("Invalid Split Type");
         }
-
         transaction.TransactionSplits = splits;
         _context.Transactions.Update(transaction);
         _context.SaveChanges();

@@ -13,14 +13,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import type { ViewGroupDTO } from "../types/ViewGroupDTO";
 import AddMemberModal from "../components/AddMemberModal";
+import AddTransactionModal from "../components/AddTransactionModal";
+import ViewSettlesModal from "../components/ViewSettlesModal";
+import ViewTransactionModal from "../components/ViewTransactionModal";
 
 export default function ViewGroup() {
   const navigate = useNavigate();
   const [group, setGroup] = useState<ViewGroupDTO | null>(null);
   const apiUrl = import.meta.env.VITE_API_URL;
   const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [addTransactionOpen, setAddTransactionOpen] = useState(false);
+  const [settleOpen, setSettleOpen] = useState(false);
+  const [viewTransactionOpen, setViewTransactionOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<number | null>(null);
   const { groupId } = useParams();
-
+  const userId = localStorage.getItem("id");
   useEffect(() => {
     if (groupId) {
       fetchGroup(groupId);
@@ -28,7 +35,6 @@ export default function ViewGroup() {
   }, [groupId]);
 
   const fetchGroup = async (groupId: string) => {
-    const userId = localStorage.getItem("id");
     const response = await fetch(`${apiUrl}/api/group/view`, {
       method: "POST",
       headers: {
@@ -37,7 +43,7 @@ export default function ViewGroup() {
       body: JSON.stringify({
         UserId: userId,
         GroupId: groupId,
-      }),  
+      }),
     });
     if (response.ok) {
       const data = await response.json();
@@ -90,7 +96,7 @@ export default function ViewGroup() {
           <Typography variant="h4" fontWeight={700}>
             {group?.title ?? "Group Details"}
           </Typography>
-          <Button variant="outlined" onClick={() => navigate(-1)}>
+          <Button variant="contained" onClick={() => navigate(-1)}>
             Go Back
           </Button>
         </Stack>
@@ -105,15 +111,40 @@ export default function ViewGroup() {
             <Typography variant="h6" fontWeight={600}>
               Members
             </Typography>
-            <Button variant="outlined" onClick={() => setAddMemberOpen(true)}>
+            <Button
+              variant="outlined"
+              color="success"
+              onClick={() => setAddMemberOpen(true)}
+            >
               Add Member
             </Button>
           </Stack>
+          <Divider sx={{ mb: 2 }} />
+          <div style={{ display: "flex", justifyContent: "end" }}>
+            {group?.members &&
+              (() => {
+                const currentMember = group.members.find(
+                  (m) => m.id === Number(userId)
+                );
+                return currentMember && currentMember.balance > 0;
+              })() && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  sx={{ ml: 1 }}
+                  style={{ marginBottom: "16px" }}
+                  onClick={() => setSettleOpen(true)}
+                >
+                  Settle
+                </Button>
+              )}
+          </div>
           <Divider sx={{ mb: 2 }} />
           {group?.members?.length ? (
             <List disablePadding>
               {group.members.map((member) => (
                 <Stack
+                  key={member.id}
                   direction="row"
                   justifyContent="space-between"
                   alignItems="center"
@@ -122,17 +153,20 @@ export default function ViewGroup() {
                   <ListItem key={member.id} sx={{ px: 0, py: 1 }}>
                     <ListItemText
                       primary={member.name}
-                      secondary={`Balance: €${member.balance.toFixed(2)}`}
-                      primaryTypographyProps={{ fontWeight: 500 }}
+                      secondary={`Balance owed: €${member.balance.toFixed(2)}`}
                     />
                   </ListItem>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => removeMember(member.id)}
-                  >
-                    Remove
-                  </Button>
+                  {(member.id !== Number(userId) && member.balance === 0) && (
+                    <>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => removeMember(member.id)}
+                      >
+                        Remove
+                      </Button>
+                    </>
+                  )}
                 </Stack>
               ))}
             </List>
@@ -155,11 +189,63 @@ export default function ViewGroup() {
           />
         )}
 
-        {/* Transactions Section */}
-        <Box>
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Transactions
-          </Typography>
+        {groupId && (
+          <AddTransactionModal
+            open={addTransactionOpen}
+            onClose={() => setAddTransactionOpen(false)}
+            groupId={groupId}
+            members={group?.members ?? []}
+            onSuccess={() => {
+              setAddTransactionOpen(false);
+              fetchGroup(groupId);
+            }}
+          />
+        )}
+
+        {groupId && (
+          <ViewTransactionModal
+            open={viewTransactionOpen}
+            onClose={() => {setViewTransactionOpen(false)}}
+            groupId={groupId}
+            transactionId={selectedTransaction}
+            onSuccess={() => {
+              // setSettleOpen(false);
+              // fetchGroup(groupId);
+            }}
+          />
+        )}
+
+        {groupId && (
+          <ViewSettlesModal
+            open={settleOpen}
+            onClose={() => {setSettleOpen(false), fetchGroup(groupId)}}
+            groupId={groupId}
+            onSuccess={() => {
+              // setSettleOpen(false);
+              // fetchGroup(groupId);
+            }}
+          />
+        )}
+
+        {group?.members && group.members.length > 1 && (
+          <Box>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={3}
+          >
+            <Typography variant="h6" fontWeight={600}>
+              Transactions
+            </Typography>
+            <Button
+              variant="outlined"
+              color="success"
+              onClick={() => setAddTransactionOpen(true)}
+            >
+              New Transaction
+            </Button>
+          </Stack>
           <Divider sx={{ mb: 2 }} />
           {group?.transactions?.length ? (
             <Stack spacing={2}>
@@ -169,10 +255,21 @@ export default function ViewGroup() {
                   elevation={2}
                   sx={{ p: 2, backgroundColor: "#fefefe" }}
                 >
-                  <Typography fontWeight={600}>{tx.description}</Typography>
+                  <Typography fontWeight={600}>{tx.userName}</Typography>
                   <Typography color="text.secondary" variant="body2">
-                    Amount: €{tx.amount.toFixed(2)} | By: {tx.createdBy}
+                    Amount: €{tx.amount.toFixed(2)}
                   </Typography>
+                  <Typography color="text.secondary" variant="body2">
+                    Description: {tx.description}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => {setViewTransactionOpen(true), setSelectedTransaction(tx.id)}}
+                    sx={{ mt: 1 }}
+                  >
+                    View
+                  </Button>
                 </Paper>
               ))}
             </Stack>
@@ -181,7 +278,7 @@ export default function ViewGroup() {
               No transactions recorded.
             </Typography>
           )}
-        </Box>
+        </Box>)}
       </Paper>
     </Box>
   );
