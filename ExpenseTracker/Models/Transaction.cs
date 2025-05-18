@@ -12,7 +12,6 @@ public class Transaction
     public Group Group { get; set; }
     public User User { get; set; }
 
-    //public Map<int, double> splits { get; set; };
     public List<TransactionSplit> TransactionSplits { get; set; }
 
     public Transaction()
