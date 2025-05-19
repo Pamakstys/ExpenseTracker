@@ -1,4 +1,4 @@
-# User Group Management Web Application
+# User Group Expenses Management Web Application
 
 This web application allows users to manage groups, create transactions, and split expenses among group members. It provides features for viewing group balances, adding/removing members, and settling debts within groups.
 
