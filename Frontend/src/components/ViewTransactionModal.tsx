@@ -38,7 +38,7 @@ export default function ViewTransactionModal({
   const fetchTransaction = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${apiUrl}/api/transaction/view`, {
+      const response = await fetch(`${apiUrl}/transaction/view`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

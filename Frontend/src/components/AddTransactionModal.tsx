@@ -51,7 +51,7 @@ export default function AddTransactionModal({
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/transaction/create`, {
+      const response = await fetch(`${apiUrl}/transaction/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

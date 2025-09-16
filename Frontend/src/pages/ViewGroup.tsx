@@ -35,7 +35,7 @@ export default function ViewGroup() {
   }, [groupId]);
 
   const fetchGroup = async (groupId: string) => {
-    const response = await fetch(`${apiUrl}/api/group/view`, {
+    const response = await fetch(`${apiUrl}/group/view`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export default function ViewGroup() {
   const removeMember = async (userId: string | number) => {
     if (!groupId) return;
     try {
-      const response = await fetch(`${apiUrl}/api/group/removeMember`, {
+      const response = await fetch(`${apiUrl}/group/removeMember`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -25,7 +25,7 @@ export default function Groups() {
 
   const fetchGroups = async () => {
     const id = localStorage.getItem("id");
-    const response = await fetch(`${apiUrl}/api/group/getByUser/${id}`, {
+    const response = await fetch(`${apiUrl}/group/getByUser/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

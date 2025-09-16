@@ -34,7 +34,7 @@ export default function AddMemberModal({
 
   useEffect(() => {
     if (open) {
-      fetch(`${apiUrl}/api/user/all`)
+      fetch(`${apiUrl}/user/all`)
         .then((res) => res.json())
         .then((data) => {
           const currentUserId = localStorage.getItem("id");
@@ -56,7 +56,7 @@ export default function AddMemberModal({
       setError("Please select a user.");
       return;
     }
-    const response = await fetch(`${apiUrl}/api/group/addMember`, {
+    const response = await fetch(`${apiUrl}/group/addMember`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

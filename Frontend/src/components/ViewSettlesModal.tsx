@@ -41,7 +41,7 @@ export default function ViewSettlesModal({
   const fetchSettles = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${apiUrl}/api/transaction/get-splits`, {
+      const response = await fetch(`${apiUrl}/transaction/get-splits`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export default function ViewSettlesModal({
   const handleSettle = async (splitId: number) => {
     setSettlingId(splitId);
     try {
-      const response = await fetch(`${apiUrl}/api/transaction/settle`, {
+      const response = await fetch(`${apiUrl}/transaction/settle`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

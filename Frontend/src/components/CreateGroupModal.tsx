@@ -28,7 +28,7 @@ export default function CreateGroupModal({
     e.preventDefault();
     setError("");
     const id = localStorage.getItem("id");
-    const response = await fetch(`${apiUrl}/api/group/create`, {
+    const response = await fetch(`${apiUrl}/group/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

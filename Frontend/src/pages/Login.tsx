@@ -24,7 +24,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    fetch(`${apiUrl}/api/user/${endpoint}`, {
+    fetch(`${apiUrl}/user/${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
