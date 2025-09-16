@@ -1,4 +1,4 @@
-# User Group Management Web Application
+# User Group Expenses Management Web Application
 
 This web application allows users to manage groups, create transactions, and split expenses among group members. It provides features for viewing group balances, adding/removing members, and settling debts within groups.
 
@@ -31,9 +31,10 @@ This web application allows users to manage groups, create transactions, and spl
 - **Dynamic**: Manually enter the exact amount each member owes, including yourself.
 
 ---
+### Running the application:
+- **To run backend**:
+  - dotnet run
 
-To run backend: dotnet run
-
-To run frontend: 
-npm install
-npm run dev
+- **To run frontend**: 
+  - npm install
+  - npm run dev
