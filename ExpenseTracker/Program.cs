@@ -30,6 +30,8 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader());
 });
 
+builder.WebHost.UseUrls("http://0.0.0.0:5000");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
